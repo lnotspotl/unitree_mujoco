@@ -671,11 +671,13 @@ int main(int argc, char **argv)
   mjv_defaultPerturb(&pert);
 
   // Load simulation configuration
-  std::filesystem::path proj_dir = std::filesystem::path(getExecutableDir()).parent_path();
-  param::config.load_from_yaml(proj_dir / "config.yaml");
+  std::filesystem::path executable_dir = std::filesystem::path(getExecutableDir());
+  std::filesystem::path config_path = (argc > 1) ? std::filesystem::path(argv[1]) : executable_dir / "config.yaml";
+  std::cerr << "Config path: " << config_path.string() << std::endl;
+  param::config.load_from_yaml(config_path);
   param::helper(argc, argv);
   if(param::config.robot_scene.is_relative()) {
-    param::config.robot_scene = proj_dir.parent_path() / "unitree_robots" / param::config.robot / param::config.robot_scene;
+    param::config.robot_scene = config_path.parent_path() / param::config.robot_scene; // relative to where config.yaml is
   }
 
   // simulate object encapsulates the UI

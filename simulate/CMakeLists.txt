@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(unitree_mujoco)
+project(unitree_mujoco_simulate)
 
 include(FetchContent)
 
@@ -88,4 +88,4 @@ link_libraries(
 add_executable(unitree_mujoco ${SIM_SRC} src/main.cc)
 target_link_libraries(unitree_mujoco ${MUJOCO_LIB})
 
-add_executable(jstest src/joystick/jstest.cc src/joystick/joystick.cc)
+#add_executable(jstest src/joystick/jstest.cc src/joystick/joystick.cc)
