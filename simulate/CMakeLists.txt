@@ -42,21 +42,8 @@ FetchContent_Declare(
   CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF
 )
 FetchContent_MakeAvailable(unitree_sdk2)
-message(STATUS "Unitree SDK2 source dir: ${unitree_sdk2_SOURCE_DIR}")
+message(STATUS "Unitree SDK2 source dir: ${CMAKE_INSTALL_LIBDIR}")
 
-# Install unitree_sdk2
-install(DIRECTORY ${unitree_sdk2_SOURCE_DIR}/lib/
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    FILES_MATCHING PATTERN "*.so*" PATTERN "*.a"
-)
-
-install(DIRECTORY ${unitree_sdk2_SOURCE_DIR}/include/
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
-install(DIRECTORY ${unitree_sdk2_SOURCE_DIR}/thirdparty/include/ddscxx/
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
 find_package(Boost REQUIRED COMPONENTS program_options)
 
 include_directories(
@@ -89,3 +76,34 @@ add_executable(unitree_mujoco ${SIM_SRC} src/main.cc)
 target_link_libraries(unitree_mujoco ${MUJOCO_LIB})
 
 #add_executable(jstest src/joystick/jstest.cc src/joystick/joystick.cc)
+
+install(DIRECTORY ${unitree_sdk2_SOURCE_DIR}/lib/
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    FILES_MATCHING PATTERN "*.so*" PATTERN "*.a"
+)
+
+install(DIRECTORY ${unitree_sdk2_SOURCE_DIR}/include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(DIRECTORY ${unitree_sdk2_SOURCE_DIR}/thirdparty/include/ddscxx/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(DIRECTORY ${MUJOCO_DIR}/bin/
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
+    FILES_MATCHING PATTERN "*"
+)
+
+install(DIRECTORY ${MUJOCO_DIR}/include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(DIRECTORY ${MUJOCO_DIR}/lib/
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    FILES_MATCHING PATTERN "*.so*" PATTERN "*.a"
+)
+
+install(TARGETS unitree_mujoco
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
