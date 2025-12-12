@@ -105,6 +105,7 @@
               type="cylinder" class="collision" />
             <geom pos="0 0 -0.213" mesh="foot" class="visual" material="black" />
             <geom name="FL" class="foot" />
+            <site name="FL_foot_site" pos="-0.002 0 -0.213" size="0.022" />
             <body name="FL_foot" pos="0 0 -0.213" />
           </body>
         </body>
@@ -140,6 +141,7 @@
               type="cylinder" class="collision" />
             <geom pos="0 0 -0.213" mesh="foot" class="visual" material="black" />
             <geom name="FR" class="foot" />
+            <site name="FR_foot_site" pos="-0.002 0 -0.213" size="0.022" />
             <body name="FR_foot" pos="0 0 -0.213" />
           </body>
         </body>
@@ -175,6 +177,7 @@
               type="cylinder" class="collision" />
             <geom pos="0 0 -0.213" mesh="foot" class="visual" material="black" />
             <geom name="RL" class="foot" />
+            <site name="RL_foot_site" pos="-0.002 0 -0.213" size="0.022" />
             <body name="RL_foot" pos="0 0 -0.213" />
           </body>
         </body>
@@ -212,6 +215,7 @@
               type="cylinder" class="collision" />
             <geom pos="0 0 -0.213" mesh="foot" class="visual" material="black" />
             <geom name="RR" class="foot" />
+            <site name="RR_foot_site" pos="-0.002 0 -0.213" size="0.022" />
             <body name="RR_foot" pos="0 0 -0.213" />
           </body>
         </body>
@@ -280,6 +284,11 @@
     
     <framepos name="frame_pos" objtype="site" objname="imu" />
     <framelinvel name="frame_vel" objtype="site" objname="imu" />
+
+    <touch name="FR_foot_force" site="FR_foot_site" />
+    <touch name="FL_foot_force" site="FL_foot_site" />
+    <touch name="RR_foot_force" site="RR_foot_site" />
+    <touch name="RL_foot_force" site="RL_foot_site" />
   </sensor>
 
   <keyframe>

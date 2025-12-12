@@ -112,6 +112,7 @@
               <geom type="mesh" rgba="0.15 0.15 0.15 1" mesh="wheel" pos="0 0.0 0"
                 quat="0.0 1.0 0.0 0.0" />
               <geom pos="0 0.0 0" quat="0.0 1.0 0.0 0.0" type="mesh" mesh="wheel" class="foot" />
+              <site name="FL_foot_site" pos="0 0 0" size="0.022" />
             </body>
 
           </body>
@@ -153,6 +154,7 @@
               <joint name="FR_wheel_joint" pos="0 0 0" axis="0 1 0" />
               <geom type="mesh" rgba="0.15 0.15 0.15 1" mesh="wheel" pos="0 -0.0 0" />
               <geom pos="0 0.0 0" type="mesh" mesh="wheel" class="foot"/>
+              <site name="FR_foot_site" pos="0 0 0" size="0.022" />
             </body>
 
           </body>
@@ -195,6 +197,7 @@
               <geom type="mesh" rgba="0.15 0.15 0.15 1" mesh="wheel" pos="0 0.0 0"
                 quat="0.0 1.0 0.0 0.0" />
               <geom pos="0 0.0 0" quat="0.0 1.0 0.0 0.0" type="mesh" mesh="wheel" class="foot"/>
+              <site name="RL_foot_site" pos="0 0 0" size="0.022" />
             </body>
 
           </body>
@@ -238,6 +241,7 @@
               <joint name="RR_wheel_joint" pos="0 0 0" axis="0 1 0" />
               <geom type="mesh" rgba="0.15 0.15 0.15 1" mesh="wheel" pos="0 -0.00 0" />
               <geom pos="0 0.0 0" type="mesh" mesh="wheel" class="foot"/>
+              <site name="RR_foot_site" pos="0 0 0" size="0.022" />
             </body>
 
           </body>
@@ -333,6 +337,11 @@
 
     <framepos name="frame_pos" objtype="site" objname="imu" />
     <framelinvel name="frame_vel" objtype="site" objname="imu" />
+
+    <touch name="FR_foot_force" site="FR_foot_site" />
+    <touch name="FL_foot_force" site="FL_foot_site" />
+    <touch name="RR_foot_force" site="RR_foot_site" />
+    <touch name="RL_foot_force" site="RL_foot_site" />
   </sensor>
 
 </mujoco>

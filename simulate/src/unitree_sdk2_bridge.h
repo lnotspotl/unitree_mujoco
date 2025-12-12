@@ -88,6 +88,9 @@ protected:
     int secondary_imu_gyro_adr_ = -1;
     int secondary_imu_acc_adr_ = -1;
 
+    // Foot force sensor addresses (FR, FL, RR, RL order)
+    int foot_force_adr_[4] = {-1, -1, -1, -1};
+
     std::shared_ptr<unitree::common::UnitreeJoystick> joystick = nullptr;
 
     void _check_sensor()
@@ -145,6 +148,14 @@ protected:
         if (sensor_id >= 0) {
             secondary_imu_acc_adr_ = mj_model_->sensor_adr[sensor_id];
         }
+
+        const char* foot_force_names[4] = {"FR_foot_force", "FL_foot_force", "RR_foot_force", "RL_foot_force"};
+        for (int i = 0; i < 4; i++) {
+            sensor_id = mj_name2id(mj_model_, mjOBJ_SENSOR, foot_force_names[i]);
+            if (sensor_id >= 0) {
+                foot_force_adr_[i] = mj_model_->sensor_adr[sensor_id];
+            }
+        }
     }
 };
 
@@ -170,6 +181,8 @@ public:
         thread_ = std::make_shared<unitree::common::RecurrentThread>(
             "unitree_bridge", UT_CPU_ID_NONE, 1000, [this]() { this->run(); });
     }
+
+    virtual void populateAdditionalLowState() {}
 
     virtual void run()
     {
@@ -221,8 +234,12 @@ public:
                 lowstate->msg_.imu_state().accelerometer()[1] = mj_data_->sensordata[imu_acc_adr_ + 1];
                 lowstate->msg_.imu_state().accelerometer()[2] = mj_data_->sensordata[imu_acc_adr_ + 2];
             }
-            
+
             lowstate->msg_.tick() = std::round(mj_data_->time / 1e-3);
+
+            // Hook for derived classes to add additional data before publishing
+            populateAdditionalLowState();
+
             lowstate->unlockAndPublish();
         }
         // highstate
@@ -254,7 +271,25 @@ private:
     unitree::common::RecurrentThreadPtr thread_;
 };
 
-using Go2Bridge = RobotBridge<unitree::robot::go2::subscription::LowCmd, unitree::robot::go2::publisher::LowState>;
+class Go2Bridge : public RobotBridge<unitree::robot::go2::subscription::LowCmd, unitree::robot::go2::publisher::LowState>
+{
+public:
+    Go2Bridge(mjModel *model, mjData *data) : RobotBridge(model, data) {}
+
+    void populateAdditionalLowState() override
+    {
+        // Foot force - read from touch sensors and populate foot_force
+        for (int i = 0; i < 4; i++) {
+            if (foot_force_adr_[i] >= 0) {
+                double force = mj_data_->sensordata[foot_force_adr_[i]];
+                // Convert to int16_t (unitree SDK uses raw force values)
+                lowstate->msg_.foot_force()[i] = static_cast<int16_t>(force);
+            } else {
+                lowstate->msg_.foot_force()[i] = 0;
+            }
+        }
+    }
+};
 
 class G1Bridge : public RobotBridge<unitree::robot::g1::subscription::LowCmd, unitree::robot::g1::publisher::LowState>
 {

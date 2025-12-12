@@ -47,6 +47,8 @@ class UnitreeSdk2Bridge:
         self.joystick = None
 
         # Check sensor
+        self.have_imu_ = False
+        self.have_frame_sensor_ = False
         for i in range(self.dim_motor_sensor, self.mj_model.nsensor):
             name = mujoco.mj_id2name(
                 self.mj_model, mujoco._enums.mjtObj.mjOBJ_SENSOR, i
@@ -55,6 +57,16 @@ class UnitreeSdk2Bridge:
                 self.have_imu_ = True
             if name == "frame_pos":
                 self.have_frame_sensor_ = True
+
+        # Foot force sensor addresses (FR, FL, RR, RL order to match unitree SDK convention)
+        self.foot_force_adr = [-1, -1, -1, -1]
+        foot_force_names = ["FR_foot_force", "FL_foot_force", "RR_foot_force", "RL_foot_force"]
+        for i, name in enumerate(foot_force_names):
+            sensor_id = mujoco.mj_name2id(self.mj_model, mujoco._enums.mjtObj.mjOBJ_SENSOR, name)
+            if sensor_id >= 0:
+                self.foot_force_adr[i] = self.mj_model.sensor_adr[sensor_id]
+        self.is_go2 = config.ROBOT=="go2"
+        self.is_go2w = config.ROBOT=="go2w"
 
         # Unitree sdk2 message
         self.low_state = LowState_default()
@@ -167,6 +179,17 @@ class UnitreeSdk2Bridge:
                 self.low_state.imu_state.accelerometer[2] = self.mj_data.sensordata[
                     self.dim_motor_sensor + 9
                 ]
+
+            # Foot force (only for Go2 / unitree_go message type)
+            if not self.is_go2 or self.is_go2w:  # unitree_go (Go2)
+                for i in range(4):
+                    if self.foot_force_adr[i] >= 0:
+                        # Touch sensor returns normal force magnitude in Newtons
+                        force = self.mj_data.sensordata[self.foot_force_adr[i]]
+                        # Convert to int16 (unitree SDK uses raw force values)
+                        self.low_state.foot_force[i] = int(force)
+                    else:
+                        self.low_state.foot_force[i] = 0
 
             if self.joystick != None:
                 pygame.event.get()
